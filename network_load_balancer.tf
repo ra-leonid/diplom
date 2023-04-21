@@ -60,15 +60,15 @@ resource "yandex_lb_network_load_balancer" "site-devops-lb" {
     }
   }
 
-  listener {
-    name = "test-${terraform.workspace}"
-    port = 5000
-    target_port = 40000
-    external_address_spec {
-#          address = yandex_vpc_address.addr-web.external_ipv4_address[0].address
-      ip_version = "ipv4"
-    }
-  }
+#  listener {
+#    name = "test-${terraform.workspace}"
+#    port = 5000
+#    target_port = 40000
+#    external_address_spec {
+##          address = yandex_vpc_address.addr-web.external_ipv4_address[0].address
+#      ip_version = "ipv4"
+#    }
+#  }
 
   attached_target_group {
     target_group_id = yandex_lb_target_group.site-devops-lb-tg.id
