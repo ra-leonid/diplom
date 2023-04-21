@@ -50,6 +50,9 @@
 1. Terraform сконфигурирован и создание инфраструктуры посредством Terraform возможно без дополнительных ручных действий.
 2. Полученная конфигурация инфраструктуры является предварительной, поэтому в ходе дальнейшего выполнения задания возможны изменения.
 
+![](img/terraform-io-prod.png)
+
+
 ---
 ### Создание Kubernetes кластера
 
@@ -71,6 +74,10 @@
 2. В файле `~/.kube/config` находятся данные для доступа к кластеру.
 3. Команда `kubectl get pods --all-namespaces` отрабатывает без ошибок.
 
+![](img/kubeconfig.png)
+
+![](img/create-k8s-cluster.png)
+
 ---
 ### Создание тестового приложения
 
@@ -88,6 +95,11 @@
 
 1. Git репозиторий с тестовым приложением и Dockerfile.
 2. Регистр с собранным docker image. В качестве регистра может быть DockerHub или [Yandex Container Registry](https://cloud.yandex.ru/services/container-registry), созданный также с помощью terraform.
+
+[Контейнер](https://hub.docker.com/repository/docker/raleonid/app-meow)
+
+[Репозиторий тестового приложения](https://github.com/ra-leonid/app-meow)
+
 
 ---
 ### Подготовка cистемы мониторинга и деплой приложения
@@ -113,6 +125,16 @@
 3. Дашборды в grafana отображающие состояние Kubernetes кластера.
 4. Http доступ к тестовому приложению.
 
+[values.yaml](src/deploy/kube-prometheus/values.yaml)
+
+Login:      `admin`
+
+Password:   `prom-operator`
+
+[Grafana](http://meow-app.duckdns.org:3000)
+
+![](img/grafana.png)
+
 ---
 ### Установка и настройка CI/CD
 
@@ -131,16 +153,72 @@
 2. При любом коммите в репозиторие с тестовым приложением происходит сборка и отправка в регистр Docker образа.
 3. При создании тега (например, v1.0.0) происходит сборка и отправка с соответствующим label в регистр, а также деплой соответствующего Docker образа в кластер Kubernetes.
 
+[Jenkins](http://meow-app.duckdns.org:9000)
+
+Login:      `admin`
+
+Password:   `bgxnQ6GjGeQ9qhSsGfeGxi`
+
+Код пайплайна в [Jenkins](https://github.com/ra-leonid/app-meow/blob/main/Jenkinsfile) файле репозитория приложения
+
+
 ---
 ## Что необходимо для сдачи задания?
 
 1. Репозиторий с конфигурационными файлами Terraform и готовность продемонстрировать создание всех ресурсов с нуля.
+
+[diplom](https://github.com/ra-leonid/diplom)
+
 2. Пример pull request с комментариями созданными atlantis'ом или снимки экрана из Terraform Cloud.
+
+![](img/terraform-io-prod.png)
+
 3. Репозиторий с конфигурацией ansible, если был выбран способ создания Kubernetes кластера при помощи ansible.
+
+[kubespray](https://github.com/ra-leonid/diplom/tree/main/src/vendor/kubespray)
+
 4. Репозиторий с Dockerfile тестового приложения и ссылка на собранный docker image.
+
+[Dockerfile](https://github.com/ra-leonid/app-meow/blob/main/Dockerfile)
+
+[docker image](https://hub.docker.com/repository/docker/raleonid/app-meow)
+
 5. Репозиторий с конфигурацией Kubernetes кластера.
+
+[kubespray](https://github.com/ra-leonid/diplom/tree/main/src/vendor/kubespray)
+
+[jenkins](https://github.com/ra-leonid/diplom/tree/main/src/deploy/jenkins)
+
+[kube-prometheus](https://github.com/ra-leonid/diplom/tree/main/src/deploy/kube-prometheus)
+
 6. Ссылка на тестовое приложение и веб интерфейс Grafana с данными доступа.
+
+[Приложение](http://meow-app.duckdns.org)
+
+[Grafana](http://meow-app.duckdns.org:3000)
+
+Login:      `admin`
+
+Password:   `prom-operator`
+
+[Jenkins](http://meow-app.duckdns.org:9000)
+
+Login:      `admin`
+
+Password:   `PA270qajJiMfmaOZECexeb`
+
+![](img/jenkins1.png)
+
+![](img/jenkins2.png)
+
+![](img/jenkins3.png)
+
+
 7. Все репозитории рекомендуется хранить на одном ресурсе (github, gitlab)
+
+
+
+[Репозиторий тестового приложения](https://github.com/ra-leonid/app-meow)
 
 ---
 ## Как правильно задавать вопросы дипломному руководителю?

@@ -1,0 +1,39 @@
+---
+all:
+  hosts:
+    node1:
+      ansible_host: 10.130.0.5
+      ansible_user: ubuntu
+    node2:
+      ansible_host: 10.129.0.14
+      ansible_user: ubuntu
+    node3:
+      ansible_host: 10.128.0.28
+      ansible_user: ubuntu
+    node4:
+      ansible_host: 10.130.0.14
+      ansible_user: ubuntu
+    node5:
+      ansible_host: 10.129.0.33
+      ansible_user: ubuntu
+    node6:
+      ansible_host: 10.128.0.15
+      ansible_user: ubuntu
+  children:
+    bastion:
+      hosts:
+        bastion:
+          ansible_host: 84.201.175.102
+          ansible_user: ubuntu
+    kube_control_plane:
+      hosts:
+        node1:
+        node2:
+        node3:
+    kube_node:
+      hosts:
+        node4:
+        node5:
+        node6:
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -W %h:%p ubuntu@84.201.175.102 -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null\""

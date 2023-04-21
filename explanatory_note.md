@@ -4,6 +4,8 @@ terraform v1.4.2
 terraform yandex provider v0.88.0
 kubespray v2.21.0
 
+Разработка и отладка велась локально, с прицелом на использование Atlantis, но в последствии запуск поменял на terraform-cloud.
+
 ## Обновляем terraform до последней версии
 
 <details>
@@ -212,33 +214,9 @@ docker image push raleonid/app-meow:0.0.1
 
 ## Подготовка cистемы мониторинга и деплой приложения
 
-При деплое автоматически настраиваем ip адреса в файле qbec.yaml.
-Настраиваем 3 окружения stage, prod и debug. debug нужен для локальной отладки на minikube. 
-Окружение в файлах qbec.yaml автоматически корректируется при деплое. 
-* Для debug - в makefile.
-```commandline
-	sed -i "/debug/,+2c\    debug:\n      defaultNamespace: debug\n      server: https://$IP_CONTROL_PLANE:8443" ./src/deploy/app/qbec.yaml
-```
-* Для stage и prog - Ansible. 
-
-**TODO**: Реализовать автокорректировку окружение в файлах qbec.yaml при деплое в облако.
-
-### Команды развертывания инфраструктуры и деплой приложений:
-
-| Команда                                 |                                      Назначение                                       |
-|:----------------------------------------|:-------------------------------------------------------------------------------------:|
-| make                                    |            Развертывание инфраструктуры в YC и деплой в namespace `stage`             |
-| make ns=stage                           |                                    Аналогично make                                    |
-| make ns=prod                            |             Развертывание инфраструктуры в YC и деплой в namespace `prod`             |
-| make init                               |          Инициализация terraform. Только для развертывания `stage` и `prod`           |
-| make apply                              |             Только развертывание инфраструктуры в YC для `stage` и `prod`             |
-| make deploy ns=\<namespace\>            |               Только деплой основного приложения, мониторинга, atlantis               |
-| make deploy_app ns=\<namespace\>        |                          Только деплой основного приложения                           |
-| make deploy_monitoring ns=\<namespace\> |                               Только деплой мониторинга                               |
-| make deploy_atlantis ns=\<namespace\>   |                                Только деплой atlantis                                 |
-| make deploy_jenkins ns=\<namespace\>    |                                 Только деплой jenkins                                 |
-| make destroy ns=\<namespace\>           |           Деинсталяция приложений и удаление локального кластера Kubernetes           |
-| make destroy                            |                              Удаление инфраструктуры YC                               |
+Деплой основного приложения будем осуществлять посредством helm.
+Для того, чтобы выполнять автодеплой при коммитах и созданиях тегов, чарт проекта расположим в репозитории основного проекта.
+Дл общего деплоя, проект будем загружать в папку `.src/deploy/app` и оттуда деплоить.
 
 ### Настройка деплоя приложения:
 Деплой приложения осуществляем посредством helm.
@@ -246,14 +224,11 @@ docker image push raleonid/app-meow:0.0.1
 ```commandline
 helm create app
 ```
-2. Описываем создание приложения в файлах [каталога](src/deploy/app/), лишние очищаем, удаляем.
+2. Описываем создание приложения в файлах каталога, лишние очищаем, удаляем.
 3. Команда деплоя:
 ```commandline
 helm upgrade --install app-meow app --create-namespace -n stage
 ```
-где:
-* `--strict-vars` - требует, чтобы все объявленные значения были установлены в командной строке. Запрещает установку необъявленных переменных.
-* `--yes` - на все вопросы деплоя отвечать `yes`.
 
 ### Настройка деплоя kube-prometheus
 Деплой kube-prometheus выполняем с помощью helm.
@@ -288,6 +263,8 @@ kubectl get secret monitoring-grafana -o jsonpath="{.data.admin-password}" | bas
 **TODO**: Реализовать безопасное хранение пароля админа, реализовать установку с помощью qbec.
 
 ### Настройка деплоя atlantis
+<details>
+    <summary>В итоговый вариант не вошел.</summary>
 Деплой atlantis выполняем с помощью helm.
 1. Создаём каталог, получаем настройки чарта:
 ```commandline
@@ -318,17 +295,18 @@ ingress:
 Итоговый файл настроек [values.yaml](src/deploy/atlantis/values.yaml).
 3. Команда деплоя:
 ```commandline
-helm upgrade --install atlantis runatlantis/atlantis --create-namespace -n debug -f src/deploy/atlantis/values.yaml --set ingress.hosts[0].host=atlantis.meow-app.local
+helm upgrade --install atlantis runatlantis/atlantis --create-namespace -n prod -f src/deploy/atlantis/values.yaml --set ingress.hosts[0].host=atlantis.meow-app.local
 ```
 
 **TODO**: Реализовать безопасное хранение token и secret, разобраться как задается пароль админа, реализовать установку с помощью qbec.
+</details>
 
 ## Установка и настройка CI/CD
 1. Создаём каталог, получаем настройки чарта:
 ```commandline
 mkdir -p src/deploy/jenkins
 helm repo add jenkins https://charts.jenkins.io
-helm show values jenkins/jenkins > src/deploy/jenkins/values.yaml
+helm show values jenkins/jenkins > src/deploy/jenkins/values-base.yaml
 ```
 2. В настройках чарта меняем (**только указанные значения!**) в секциях:
 ```yaml
@@ -343,6 +321,9 @@ controller:
   installPlugins:
     - github-branch-source:1703.vd5a_2b_29c6cdc
     - kubernetes:3910.ve59cec5e33ea_
+    - kubernetes:3923.v294a_d4250b_91
+    - docker-workflow:563.vd5d2e5c4007f
+    - kubernetes-cli:1.12.0
 //...
 persistence:
   storageClass: nfs
@@ -355,7 +336,7 @@ serviceAccount:
 
 Итоговый файл настроек [values.yaml](src/deploy/jenkins/values.yaml).
 3. Чтобы jenkins мог сохранять своё состояние, необходимо установить `nfs-provigioner`. Для этого, в makefile создаем 
-отдельный подготовительный этап перед деплоем всех приложений, в которы также выносим подключение всех необходимых 
+отдельный подготовительный этап перед деплоем всех приложений, в который также выносим подключение всех необходимых 
 репозиториев чартов:
 ```makefile
 configure_deploy:
@@ -374,10 +355,8 @@ helm upgrade --install jenkins -n $(ns) -f ./src/deploy/jenkins/values.yaml jenk
 ```
 5. Для получения пароля, выполняем команду:
 ```commandline
-kubectl -n stage get secret jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode ; echo
+kubectl -n prod get secret jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode ; echo
 ```
-Пароль:
-0y31Rn5EEtPa72cuJ919Q4
 
 6. Внутренняя настройка Jenkins:
    1. Создаем credentials для подключения к репозиториям github:
@@ -391,7 +370,7 @@ kubectl -n stage get secret jenkins -o jsonpath="{.data.jenkins-admin-password}"
    3. Создаем credentials с токеном сервисного аккаунта `jenkins` в k8s:
 ```commandline
 # Команда получения токена
-kubectl -n stage get secret jenkins-token -o go-template --template '{{index .data "token"}}' | base64 -d ; echo
+kubectl -n prod get secret jenkins-prod-token -o go-template --template '{{index .data "token"}}' | base64 -d ; echo
 ```
    ![](img/token-k8s-sa.png)
 
@@ -438,48 +417,18 @@ kubectl -n stage get secret jenkins-token -o go-template --template '{{index .da
    ![](img/pipeline-tag.png)
 
 
-Генерируем личный токен разработчика:
-diplom
-`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`
-diplom1
-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
-leonid
-`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`
+Генерируем личный токен разработчика
 
-http://158.160.102.29:9000/github-webhook/
+Настраиваем в проекте github webhook: `http://158.160.102.29:9000/github-webhook/`
 
-Тестируем работу webhook на создание тегов:
+Тестируем работу webhook:
 ```commandline
-git tag -a v0.0.1 -m "test webhook tag"
-git push new1 v0.0.1
+git add . && git commit --amend --no-edit && git push
+git add . && git commit -m "Add teg v0.0.1" && git push
+
+git tag -a v0.0.1 -m "Test webhook tag"
+git push origin v0.0.1
 ```
-
-git remote add new1 https://github.com/ra-diplom1/app-meow.git
-git branch -M main
-git push -u new1 main
-
-git add . && git commit --amend --no-edit && git push -u new1
-git add . && git commit -m "test" && git push -u new1
-
-
-Удалить все теги с сервера git:
-git ls-remote --tags --refs new1 | cut -f2 | xargs git push new1 --delete
-git tag -l | cut -f2 | xargs git tag -d
-
-
-
-**TODO**: 
-1. Реализовать безопасное хранение token и secret
-2. Реализовать установку с помощью qbec.
-3. Реализовать проброс credentials для подключения к github, dockerhub при деплое jenkins. 
-
-ssh-keygen -t ed25519 -C "ra-diplom1@mail.ru" -f ~/.ssh/github1
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/github1
-
-cat ~/.ssh/github1.pub
-
-helm show values jenkins/jenkins > src/deploy/jenkins/values.yaml
 
 ```commandline
 # Создаем образ командой:
@@ -499,14 +448,6 @@ agent:
 ```
 
 
-/////////////////////
-# Create a ServiceAccount named `jenkins-robot` in a given namespace.
-kubectl -n stage create serviceaccount jenkins-robot
-kubectl -n stage create rolebinding jenkins-robot-binding --clusterrole=cluster-admin --serviceaccount=stage:jenkins-robot
-//kubectl -n stage get serviceaccount jenkins-robot -o go-template --template='{{range .secrets}}{{.name}}{{"\n"}}{{end}}'
-kubectl -n stage get secrets jenkins-robot-token -o go-template --template '{{index .data "token"}}' | base64 -d ; echo
-
-
 Для автоматического деплоя, нам необходимо получить токен сервисного аккаунта jenkins.
 [В Kubernetes 1.24 секреты ServiceAccount больше не генерируются автоматически.](https://stackoverflow.com/questions/72256006/service-account-secret-is-not-listed-how-to-fix-it)
 Вам нужно вручную создать секрет, ключ token в data поле будет автоматически установлен.
@@ -524,7 +465,7 @@ type: kubernetes.io/service-account-token
 
 Получаем токен сервисного аккаунта:
 ```commandline
-kubectl -n stage get secrets jenkins-token -o go-template --template '{{index .data "token"}}' | base64 -d ; echo
+kubectl -n prod get secrets jenkins-token -o go-template --template '{{index .data "token"}}' | base64 -d ; echo
 ```
 
 Сохраняем его в credentials Jenkins id=`jenkins-token`:
@@ -532,38 +473,10 @@ TODO: вставить скрин
 
 Для деплоя внутри пайплайна, используем конструкцию (требуется установка плагина `kubernetes-cli`). 
 ```commandline
-        withKubeConfig([credentialsId: 'jenkins-token', namespace: "stage"]) {
+        withKubeConfig([credentialsId: 'jenkins-token']) {
             sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.26.1/bin/linux/amd64/kubectl"'
             sh 'chmod u+x ./kubectl'
             sh './kubectl get pods -n stage'
         }
 
 ```
-kubectl config set-context --current --namespace=stage
-
-УДАЛИТЬ JENKINS
-kubectl -n stage delete -f ./src/deploy/jenkins/sa.yaml
-helm uninstall jenkins -n stage
-
-ДЕПЛОЙ JENKINS:
-kubectl -n stage apply -f ./src/deploy/jenkins/sa1.yaml
-kubectl -n stage get secret jenkins-token -o go-template --template '{{index .data "token"}}' | base64 -d ; echo
-kubectl -n stage apply -f ./src/deploy/jenkins/sa-deploy.yaml
-kubectl -n stage get secret jenkins-stage-token -o go-template --template '{{index .data "token"}}' | base64 -d ; echo
-
-helm upgrade --install jenkins -n stage -f ./src/deploy/jenkins/values.yaml jenkins/jenkins
-
-helm upgrade --install jenkins-sa ./src/deploy/jenkins/jenkins-sa -n stage
-
-http://158.160.59.53:9000/safeRestart - Allows all running jobs to complete. New jobs will remain in the queue to run after the restart is complete.
-
-http://158.160.59.53:9000/restart - Forces a restart without waiting for builds to complete.
-
-
-https://get.helm.sh/helm-v3.11.3-linux-amd64.tar.gz
-
-
-http://158.160.59.53:4000/github-app/setup
-http://158.160.59.53:4000/events
-
-helm uninstall atlantis
