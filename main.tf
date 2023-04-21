@@ -2,7 +2,8 @@ module "vpc" {
 #  source  = "./modules/vpc"
 #  source  = "github.com/ra-leonid/vpc/yandex"
   source  = "registry.terraform.io/ra-leonid/vpc/yandex"
-  version = "0.2.1"
+#  source  = "ra-leonid/vpc/yandex"
+  version = "0.2.2"
   description = "managed by terraform"
   create_folder = length(var.yc_folder_id) > 0 ? false : true
   yc_folder_id = var.yc_folder_id
