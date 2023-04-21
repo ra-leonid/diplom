@@ -10,6 +10,12 @@ variable "id_rsa_pub" {
   default = ""
 }
 
+variable "yc_token" {
+  default = ""
+  type = string
+  sensitive = true
+}
+
 variable "yc_cloud_id" {
   default = ""
   type = string
