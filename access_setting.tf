@@ -61,7 +61,6 @@ output "group_vars_localhost" {
       url: var.url
     }
   )
-  filename = "src/playbook/group_vars/all/localhost/vars.yml"
 
   depends_on = [
     yandex_compute_instance.control-plane
