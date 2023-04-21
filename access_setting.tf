@@ -54,6 +54,7 @@ output "inventory" {
   ]
 }
 
+        
 output "group_vars_localhost" {
   value = templatefile("templates/group_vars_localhost.tpl",
     {
