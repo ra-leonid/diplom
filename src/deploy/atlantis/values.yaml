@@ -20,6 +20,7 @@ github:
 #   hostname: github.your.org
 # (The chart will perform the base64 encoding for you for values that are stored in secrets.)
 
+
 # If using a GitHub App, please enter your values as follows:
 githubApp:
   id: 322116
