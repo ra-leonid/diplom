@@ -4,7 +4,7 @@
 
 ## An option to override the atlantis url,
 ##   if not using an ingress, set it to the external IP.
-atlantisUrl: http://84.201.129.2:4000
+atlantisUrl: http://meow-app.duckdns.org:4000
 
 # Replace this with your own repo allowlist:
 orgAllowlist: github.com/ra-leonid/*

@@ -1,5 +1,5 @@
 variable "url" {
-  default = ""
+  default = "meow-app.duckdns.org"
 }
 
 variable "yc_key_file" {

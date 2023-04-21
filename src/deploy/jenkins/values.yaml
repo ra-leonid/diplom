@@ -93,7 +93,7 @@ controller:
   # The Protocol can be overwritten by specifying `controller.jenkinsUrlProtocol`.
   # jenkinsUrlProtocol: "https"
   # If you are not using the provided ingress you can specify `controller.jenkinsUrl` to change the url definition.
-  jenkinsUrl: "http://158.160.59.53:9000/" # здесь изменить
+  jenkinsUrl: "http://meow-app.duckdns.org:9000/" # здесь изменить
   # If you set this prefix and use ingress controller then you might want to set the ingress path below
   # jenkinsUriPrefix: "/jenkins"
   # Enable pod security context (must be `true` if podSecurityContextOverride, runAsUser or fsGroup are set)
