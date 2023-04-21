@@ -5,6 +5,8 @@ module "vpc" {
   create_folder = length(var.yc_folder_id) > 0 ? false : true
   yc_folder_id = var.yc_folder_id
   nat_instance = true
+  nat_id_rsa_pub = var.id_rsa_pub
+  nat_username = var.tf_user
   name = "k8s-${terraform.workspace}"
   subnets = local.vpc_subnets[terraform.workspace]
 }

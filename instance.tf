@@ -28,7 +28,7 @@ resource "yandex_compute_instance" "control-plane" {
   }
 
   metadata = {
-    ssh-keys = "${var.tf_user}:${file("~/.ssh/id_rsa.pub")}"
+    ssh-keys = "${var.tf_user}:${var.id_rsa_pub}"
   }
 }
 
@@ -56,6 +56,6 @@ resource "yandex_compute_instance" "node" {
   }
 
   metadata = {
-    ssh-keys = "${var.tf_user}:${file("~/.ssh/id_rsa.pub")}"
+    ssh-keys = "${var.tf_user}:${var.id_rsa_pub}"
   }
 }

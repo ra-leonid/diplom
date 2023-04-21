@@ -6,6 +6,10 @@ variable "yc_key_file" {
   default = ".secrets/.key.json"
 }
 
+variable "id_rsa_pub" {
+  default = ""
+}
+
 variable "yc_cloud_id" {
   default = ""
   type = string
