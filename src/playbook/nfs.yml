@@ -1,0 +1,23 @@
+---
+- name: Install NFS
+  hosts:
+    - kube_node
+    - kube_control_plane
+  tasks:
+    - name: Update repositories cache and install "nfs-common", "cifs-utils" packages
+      become: true
+      ansible.builtin.apt:
+        name:
+          - nfs-common
+          - cifs-utils
+        update_cache: yes
+    - name: Create a share-directory if it does not exist
+      become: true
+      ansible.builtin.file:
+        path: /data
+        state: directory
+        mode: '777'
+#    - name: This command will change the working directory to somedir/
+#      become: true
+#      ansible.builtin.shell:
+#        cmd: "mount -t nfs {{ ansible_default_ipv4.address }}:/share /data/"

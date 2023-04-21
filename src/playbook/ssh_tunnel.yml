@@ -1,0 +1,10 @@
+---
+- name: Add ssh-tunnel"
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Run ssh-command
+      ansible.builtin.command: "ssh -D {{ proxy_port }} -f -C -q -N {{ hostvars['bastion'].ansible_user }}@{{ hostvars['bastion'].ansible_host }} -p {{ ssh_port }}"
+      register: result_ssh
+      failed_when: result_ssh.rc != 0 and result_ssh.rc != 255
+      changed_when: result_ssh.rc == 0

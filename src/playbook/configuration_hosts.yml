@@ -1,0 +1,28 @@
+---
+- name: Change local setup
+  hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - name: Make sure all urls are deleted
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        state: absent
+        regexp: "^(.*){{ url }}(.*)$"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Add binding ip to dns
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+#        regexp: "^(.*){{ item }}{{ url }}(.*)$"
+        line: "{{ hostvars['kube_control_plane'].ansible_host }}  {{ item }}{{ url }}"
+        create: true
+        owner: root
+        group: root
+        mode: '0644'
+      with_items:
+        - ""
+        - atlantis.
+        - grafana.
+        - jenkins.

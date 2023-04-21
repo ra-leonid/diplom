@@ -1,0 +1,16 @@
+.idea/
+.terraform/
+.terraform.lock.hcl
+.secrets/
+secrets/
+**/terraform/**/.key.json
+*.tfstate
+*.tfstate.*
+**/pgdata?/
+**/backup/*
+**/data/*
+*.sql
+**/snapshots/
+**/bucket.tf
+**/*.tfvars
+qbec.yamle
