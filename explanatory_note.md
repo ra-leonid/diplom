@@ -301,6 +301,7 @@ helm repo add runatlantis https://runatlantis.github.io/helm-charts
 helm show values runatlantis/atlantis > src/deploy/atlantis/values.yaml
 ```
 2. По [инструкции](https://www.runatlantis.io/docs/installation-guide.html) выполняем настройку
+   1. Заходим `http://84.201.129.2:4000/github-app/setup`
 3. В настройках чарта меняем (**только указанные значения!**) в секциях:
 ```yaml
 //...

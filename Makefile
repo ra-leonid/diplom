@@ -4,7 +4,7 @@ appStartTag ?= "v0.0.5"
 
 SLEEP_COUNT := 120
 
-all: init apply pause setting_nfs deploy_k8s pause configuring_access_to_k8s tunnel
+all: init apply pause setting_nfs deploy_k8s pause configuring_access_to_k8s tunnel configure_deploy
 
 destroy:
 	terraform destroy -auto-approve
@@ -32,7 +32,7 @@ tunnel:
 setting_nfs:
 	cd ./src/playbook && ANSIBLE_FORCE_COLOR=1 ansible-playbook -i inventory.yml nfs.yml
 
-deploy: configure_deploy deploy_monitoring deploy_app deploy_atlantis deploy_jenkins
+deploy: deploy_monitoring deploy_app deploy_atlantis deploy_jenkins
 
 configure_deploy:
 	helm repo add jenkins https://charts.jenkins.io

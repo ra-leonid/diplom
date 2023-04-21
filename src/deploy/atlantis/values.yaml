@@ -15,44 +15,44 @@ orgAllowlist: github.com/ra-leonid/*
 github:
   user: ra-leonid
   token: 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
-  secret: b8f7e6ee422b3686d609a7aad7da118086d78179
+  secret: 3e18b4b58a584f0360c5991685157895af13242e
 # GitHub Enterprise only:
 #   hostname: github.your.org
 # (The chart will perform the base64 encoding for you for values that are stored in secrets.)
 
 # If using a GitHub App, please enter your values as follows:
 githubApp:
-  id: 321418
+  id: 322116
   slug: foo
   key: |
     -----BEGIN RSA PRIVATE KEY-----
-    MIIEowIBAAKCAQEAoPtVi173Lh7QM6YF8TRDfZyrLr5145nZuFah+VtQCabknk6t
-    Zfz1vPowutpw2EdmsBhH2GBZeKKgKftO1S8cTME0PQ4LnHpmrID8vPUF79ysGRqj
-    orZGx+M/A1AXfKpbbjXl56HTQxdIZDowDk7D7bigZ/XAz42qpPJ7Gt2JArFcNcVm
-    qG10pGZIoiVj8s8huH0ac8Hm5laYWM1IbASvlT2511asVZS0KkyzpXc/pEK2Aty3
-    wQOkO4phZWrAzcVJAEOJ/YGYplMc+Aa8qR1y1QTI2AO13UCeqHuL2ovQfXMEG+98
-    4OzL7vmH5cJjKh0Jts/Q3zU65EQQCJM0MVeY+wIDAQABAoIBABfHqMZSu+67LIRE
-    pSIRV1rp1rur9NwvMOMzIPAl1ffnCGR+OM0VBfPpfWNMu1ini3q9y3ciHHVeiIxL
-    DEUflW2dKKtQNNTjm+ElmLAM/diF34JB1iRGCsSiQ/+oSB/pRmJMYe7Kj9ucR9xO
-    YCTs67JlEITq35WJVsjQ7PB2AzQ7ZOgsw0Vu7wqmyJ9YqWUpj4kjjHovVYPYMfB6
-    LB7/fKiBub9WAy1SnPzjgVLgqYFjbfGnOpUFnvL+T7X2b7TE2+eb1d26GdQYXlMq
-    o7WNtz+BheU2d1DrPtZZMH/PuFwK2xNJhzJsnd1DSmo05feSwvuf1EME8fsGhQ5e
-    TOK5daECgYEAzsRnmnqQ9uLhxg/3TCr5GRbFG9DfgqnRMy2V7IE2qkNx8jAOOS0m
-    7y1AUEOnlbaXktmktseDGVsgcfwCdtRxByC5OyXvxqnnsELBYwmUWSdITFJVw94q
-    HMNIALEbFZdXFTi8zb8ZTGAj5Iey40HSiwqmb2FmVVj5FORO8xhux8sCgYEAx1AO
-    Zvl4oLmrIwbrufarNAHP9nIgnwQE1RYqCsitL94K3hNxh5BAb+E+QVAKn23Qz4ST
-    n94Fm3DDIxoFG6Owoh2H45k+N67Gslij3NS6jhPJuVluCy/chezsEhpw6SDjLqOc
-    mqqEjoBx9FnSQHTzj2asR4cjJVOkdr3k6ye1bZECgYAs2Q77w9ADrOx5sGbcX4nO
-    NlEkmmaQidL1fdLCDLjVr3Fcra24GyIRyMflYPdNkuBHmuuONbIq4sgj0Rybt7KY
-    cDGdMbpTZfD6G1Ck8aP6vnmBDG7L4DlUKctJUyDjywK5eKgDHIsZNNU0MXbMsi8/
-    t1yoVgEDTBwiuu6g7dDBhwKBgAv1Rafv98jM2vOzCpmRrxvjr/J9Tm+78f5G4ibb
-    e2iPzd8dE4aqpPMRdIa+oqSGFi0dKy5AR93Xmh2VBhFudL6FPw3st8rndYxlvQ8W
-    xEqZ7VRthSiuqnBukotTgsq56md18YNmD6XtFukuKmsrmSFVa6iu9vDaX9ev9PgW
-    3c/BAoGBAJiHGflyfsN5boWmzp4sXInqZLNofCU0s/clJxosNGLeknHhrKXMLYKQ
-    m+Chbu6ZHL3G0saXzhraeuXp21ktkzcS+PAzc7p5ilQTO4FOJkymFVZOh9CEOLHD
-    WwW0OTGvCiz02Vdra1bwOwnResyZLbSX6ueE8shGMxpH2cf4duJD
+    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
     -----END RSA PRIVATE KEY-----
-  secret: b8f7e6ee422b3686d609a7aad7da118086d78179
+  secret: 3e18b4b58a584f0360c5991685157895af13242e
 # (The chart will perform the base64 encoding for you for values that are stored in secrets.)
 
 # If using GitLab, specify like the following:
