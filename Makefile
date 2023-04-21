@@ -10,9 +10,9 @@ destroy:
 	terraform destroy -auto-approve
 
 init:
-	terraform init -reconfigure -backend-config=./.secrets/backend.conf
-	# terraform init
-	# terraform workspace new $(ns)
+	#terraform init -reconfigure -backend-config=./.secrets/backend.conf
+	terraform init
+	#terraform workspace new $(ns)
 
 apply:
 	terraform workspace select $(ns)
